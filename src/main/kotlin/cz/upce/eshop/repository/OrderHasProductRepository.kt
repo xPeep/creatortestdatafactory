@@ -1,6 +1,7 @@
 package cz.upce.eshop.repository
 
-import cz.upce.eshop.entity.OrderHasProduct
+
+import cz.upce.eshop.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface OrderHasProductRepository : JpaRepository<OrderHasProduct, Long>
+interface OrderHasProductRepository : JpaRepository<User, Long>
