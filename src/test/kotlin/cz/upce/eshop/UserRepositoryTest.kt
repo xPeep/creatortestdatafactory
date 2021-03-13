@@ -1,13 +1,12 @@
 package cz.upce.eshop
 
-import cz.upce.eshop.controller.FakeUserController
+import cz.upce.eshop.entity.User
 import cz.upce.eshop.entity.UserType
 import cz.upce.eshop.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.data.repository.findByIdOrNull
@@ -15,10 +14,9 @@ import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserRepositoryTest
 @Autowired constructor(
-    val userRepository: UserRepository,
+    val userRepository: UserRepository<Long>,
     val testEntityManager: TestEntityManager
 ) {
 
@@ -29,7 +27,7 @@ class UserRepositoryTest
 
     @Test
     fun `should store new user`() {
-        val newUser = FakeUserController.fakeUsers.first()
+        val newUser = UserMockGenerator.createUser()
         val foundUser = userRepository.save(newUser)
 
         assertThat(foundUser).isEqualTo(newUser)
@@ -37,18 +35,22 @@ class UserRepositoryTest
 
     @Test
     fun `should find all users`() {
-        FakeUserController.fakeUsers.forEach { user ->
-            testEntityManager.persist(user)
+        val fakeUsers = mutableListOf<User>()
+
+        for (i in 0..10) {
+            val user = UserMockGenerator.createUser()
+            fakeUsers.add(user)
+            userRepository.save(user)
         }
         assertThat(userRepository.findAll())
-            .hasSize(FakeUserController.fakeUsers.size)
-            .containsAll(FakeUserController.fakeUsers)
+            .hasSize(fakeUsers.size)
+            .containsAll(fakeUsers)
     }
 
     @Test
     fun `should find user by id`() {
-        val firstUser = FakeUserController.fakeUsers.first()
-        val secondUser = FakeUserController.fakeUsers.first { it != firstUser }
+        val firstUser = UserMockGenerator.createUser(UserType.REGULAR)
+        val secondUser = UserMockGenerator.createUser(UserType.REGULAR)
 
         testEntityManager.persist(firstUser)
         testEntityManager.persist(secondUser)
@@ -59,10 +61,10 @@ class UserRepositoryTest
     }
 
     @Test
-    fun `should find  VIP user`() {
-        val vipUser = FakeUserController.fakeUsers.first { it.userType == UserType.VIP }
-        val regularUser = FakeUserController.fakeUsers.first { it.userType == UserType.REGULAR }
-        val adminUser = FakeUserController.fakeUsers.first { it.userType == UserType.ADMIN }
+    fun `should find VIP users`() {
+        val vipUser = UserMockGenerator.createUser(UserType.VIP)
+        val regularUser = UserMockGenerator.createUser(UserType.REGULAR)
+        val adminUser = UserMockGenerator.createUser(UserType.ADMIN)
 
         testEntityManager.persist(vipUser)
         testEntityManager.persist(regularUser)
@@ -73,34 +75,38 @@ class UserRepositoryTest
         assertThat(foundUser).isEqualTo(vipUser)
     }
 
-    /*
-       @Test
-       fun saveProductTest2() {
-           val product = Product("MyProduct", mutableSetOf())
-           val order = Order(StateEnum.NEW, mutableSetOf())
-           val orderHasProduct1 = OrderHasProduct(order,product, 4)
-           val orderHasProduct2 = OrderHasProduct(order,product, 1)
+    @Test
+    fun `should update user by id`() {
+        val vipUser = UserMockGenerator.createUser(UserType.VIP)
+        val regularUser = UserMockGenerator.createUser(UserType.REGULAR)
+        val adminUser = UserMockGenerator.createUser(UserType.ADMIN)
 
-           productRepository.save(product)
-           orderRepository.save(order)
+        testEntityManager.persist(vipUser)
+        testEntityManager.persist(regularUser)
+        testEntityManager.persist(adminUser)
 
-           orderHasProductRepository.save(orderHasProduct1)
-           orderHasProductRepository.save(orderHasProduct2)
+        val updatedUser = userRepository.findByUsername(vipUser.username)
+        updatedUser?.userType = UserType.ADMIN
+        userRepository.save(updatedUser ?: throw IllegalStateException("User not found"))
 
-           val all = orderRepository.findAll()
-       }
-       @Test
-        fun `basic entity checks`() {
-             val product = Product("Laptop", mutableSetOf())
-             productRepository.save(product)
-             val products = productRepository.findAll()
-             product.productName = "Notebook"
-             productRepository.save(product)
-             val product2 = productRepository.findProductByProductNameContains("Laptop")
-             val productsByIdRange =  productRepository.findProductByIdBetween(2,4)
-             val productsByIdRangeSorted =  productRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
-             val all1 =  productRepository.findAll(PageRequest.of(0,2))
-             println()
-         }*/
+        val checkUser = userRepository.findByUsername(vipUser.username)
+
+        assertThat(checkUser?.userType).isEqualTo(UserType.ADMIN)
+    }
+
+    @Test
+    fun `should delete all users`() {
+        val vipUser = UserMockGenerator.createUser(UserType.VIP)
+        val regularUser = UserMockGenerator.createUser(UserType.REGULAR)
+        val adminUser = UserMockGenerator.createUser(UserType.ADMIN)
+
+        testEntityManager.persist(vipUser)
+        testEntityManager.persist(regularUser)
+        testEntityManager.persist(adminUser)
+
+        userRepository.deleteAll()
+
+        assertThat(userRepository.findAll()).isEmpty()
+    }
 
 }
