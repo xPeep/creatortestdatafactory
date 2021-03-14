@@ -9,15 +9,18 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
 @DataJpaTest
+@ComponentScan
 class UserRepositoryTest
 @Autowired constructor(
     val userRepository: UserRepository<Long>,
-    val testEntityManager: TestEntityManager
+    val testEntityManager: TestEntityManager,
+    val userMockGenerator: UserMockGenerator
 ) {
 
     @Test
@@ -27,7 +30,7 @@ class UserRepositoryTest
 
     @Test
     fun `should store new user`() {
-        val newUser = UserMockGenerator.createUser()
+        val newUser = userMockGenerator.createUser()
         val foundUser = userRepository.save(newUser)
 
         assertThat(foundUser).isEqualTo(newUser)
@@ -38,7 +41,7 @@ class UserRepositoryTest
         val fakeUsers = mutableListOf<User>()
 
         for (i in 0..10) {
-            val user = UserMockGenerator.createUser()
+            val user = userMockGenerator.createUser()
             fakeUsers.add(user)
             userRepository.save(user)
         }
@@ -49,8 +52,8 @@ class UserRepositoryTest
 
     @Test
     fun `should find user by id`() {
-        val firstUser = UserMockGenerator.createUser(UserType.REGULAR)
-        val secondUser = UserMockGenerator.createUser(UserType.REGULAR)
+        val firstUser = userMockGenerator.createUser(UserType.REGULAR)
+        val secondUser = userMockGenerator.createUser(UserType.REGULAR)
 
         testEntityManager.persist(firstUser)
         testEntityManager.persist(secondUser)
@@ -62,9 +65,9 @@ class UserRepositoryTest
 
     @Test
     fun `should find VIP users`() {
-        val vipUser = UserMockGenerator.createUser(UserType.VIP)
-        val regularUser = UserMockGenerator.createUser(UserType.REGULAR)
-        val adminUser = UserMockGenerator.createUser(UserType.ADMIN)
+        val vipUser = userMockGenerator.createUser(UserType.VIP)
+        val regularUser = userMockGenerator.createUser(UserType.REGULAR)
+        val adminUser = userMockGenerator.createUser(UserType.ADMIN)
 
         testEntityManager.persist(vipUser)
         testEntityManager.persist(regularUser)
@@ -77,9 +80,9 @@ class UserRepositoryTest
 
     @Test
     fun `should update user by id`() {
-        val vipUser = UserMockGenerator.createUser(UserType.VIP)
-        val regularUser = UserMockGenerator.createUser(UserType.REGULAR)
-        val adminUser = UserMockGenerator.createUser(UserType.ADMIN)
+        val vipUser = userMockGenerator.createUser(UserType.VIP)
+        val regularUser = userMockGenerator.createUser(UserType.REGULAR)
+        val adminUser = userMockGenerator.createUser(UserType.ADMIN)
 
         testEntityManager.persist(vipUser)
         testEntityManager.persist(regularUser)
@@ -96,9 +99,9 @@ class UserRepositoryTest
 
     @Test
     fun `should delete all users`() {
-        val vipUser = UserMockGenerator.createUser(UserType.VIP)
-        val regularUser = UserMockGenerator.createUser(UserType.REGULAR)
-        val adminUser = UserMockGenerator.createUser(UserType.ADMIN)
+        val vipUser = userMockGenerator.createUser(UserType.VIP)
+        val regularUser = userMockGenerator.createUser(UserType.REGULAR)
+        val adminUser = userMockGenerator.createUser(UserType.ADMIN)
 
         testEntityManager.persist(vipUser)
         testEntityManager.persist(regularUser)
