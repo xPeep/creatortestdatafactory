@@ -12,4 +12,3 @@ interface UserRepository<T> : JpaRepository<User, T> {
     @Query("SELECT u FROM USER u WHERE u.userType = 'REGULAR'")
     fun findAllUsersByUserType(): User?
 }
-

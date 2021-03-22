@@ -21,6 +21,10 @@ abstract class AbstractJpaPersistable<T : Serializable> : Persistable<T> {
         return id
     }
 
+    fun setId(value: T?) {
+        id = value
+    }
+
     @Transient
     override fun isNew() = null == getId()
 
@@ -33,7 +37,7 @@ abstract class AbstractJpaPersistable<T : Serializable> : Persistable<T> {
 
         other as AbstractJpaPersistable<*>
 
-        return if (null == this.getId()) false else this.getId() == other.getId()
+        return if (null == this.getId()) false else this.id == other.id
     }
 
     override fun hashCode() = 31

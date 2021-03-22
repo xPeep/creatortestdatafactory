@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="cs-CZ">
+<head>
+    <meta charset="UTF-8">
+    <title>Add CSS and JS to Thymeleaf</title>
+    <link th:href="@{/styles/cssandjs/main.css}" rel="stylesheet"/>
+</head>
+<body>
+<h2>Create account</h2>
+<section>
+    <form action="#" th:action="@{/addUser}" th:object="${user}" method="post">
+        <input type="hidden" th:field="*{id}"/>
+        <br>
+        <label>Username:
+            <input type="text" th:field="*{username}"/>
+        </label>
+        <br>
+        <label>Password:
+            <input type="text" th:field="*{password}"/>
+        </label>
+        <br>
+        <label>First name:
+            <input type="text" th:field="*{firstName}"/>
+        </label>
+        <br>
+        <label>Last name:
+            <input type="text" th:field="*{lastName}"/>
+        </label>
+        <br>
+        <label>Phone number
+            <input type="text" th:field="*{phoneNumber}"/>
+        </label>
+        <br>
+        <input type="submit"/>
+    </form>
+</section>
+</body>
+</html>

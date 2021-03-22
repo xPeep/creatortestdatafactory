@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="cs-CZ">
+<head>
+    <meta charset="UTF-8">
+    <title>Add CSS and JS to Thymeleaf</title>
+    <link th:href="@{/styles/cssandjs/main.css}" rel="stylesheet" />
+</head>
+<body>
+<h2>User list</h2>
+<section>
+
+    <div th:each="user : ${userList}">
+        <h3 th:text="${user.id} + ' : ' + ${user.username}"></h3>
+    </div>
+
+</section>
+</body>
+</html>
