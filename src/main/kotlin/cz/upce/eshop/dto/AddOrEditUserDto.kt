@@ -2,6 +2,7 @@ package cz.upce.eshop.dto
 
 import cz.upce.eshop.entity.User
 import cz.upce.eshop.entity.UserInformation
+import cz.upce.eshop.entity.UserType
 
 data class AddOrEditUserDto(
     val id: Long? = null,
@@ -11,31 +12,11 @@ data class AddOrEditUserDto(
     val lastName: String = "",
     val phoneNumber: String = ""
 ) {
-    companion object {
-        fun createUserDto(user: User?): AddOrEditUserDto {
-            return if (user == null) {
-                AddOrEditUserDto()
-            } else {
-                AddOrEditUserDto(
-                    user.id,
-                    user.username,
-                    user.password,
-                    user.userInformation?.firstName ?: "",
-                    user.userInformation?.lastName ?: "",
-                    user.userInformation?.phoneNumber ?: ""
-                )
-            }
-        }
 
-        fun createUser(findUser: User?, addOrEditUserDto: AddOrEditUserDto): User {
-            if (findUser == null) {
-                return createUser(User(), addOrEditUserDto)
-            }
-            findUser.username = addOrEditUserDto.username
-            findUser.password = addOrEditUserDto.password
-            findUser.userInformation =
-                UserInformation(addOrEditUserDto.firstName, addOrEditUserDto.lastName, addOrEditUserDto.phoneNumber)
-            return findUser
-        }
+    fun transformToUser(): User {
+        val newUser =
+            User(username, password, userType = UserType.REGULAR, UserInformation(firstName, lastName, phoneNumber))
+        newUser.id = id
+        return newUser
     }
 }

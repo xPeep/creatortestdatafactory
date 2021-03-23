@@ -1,5 +1,6 @@
 package cz.upce.eshop
 
+import cz.upce.eshop.dto.AddOrEditUserDto
 import cz.upce.eshop.entity.*
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -16,15 +17,15 @@ class UserMockGenerator {
             .joinToString("");
     }
 
-    private fun createPhoto(): UserPhoto {
+    fun createPhoto(): UserPhoto {
         return UserPhoto(generateName(5), generateName(5), LocalDateTime.now())
     }
 
-    private fun createVideo(): UserVideo {
+    fun createVideo(): UserVideo {
         return UserVideo(generateName(10), generateName(10), LocalDateTime.now())
     }
 
-    private fun createPhotos(): MutableSet<UserPhoto> {
+    fun createPhotos(): MutableSet<UserPhoto> {
         val videos = mutableSetOf<UserPhoto>()
         for (x in 0..10) {
             videos.add(UserPhoto(generateName(10), generateName(10), LocalDateTime.now()))
@@ -32,7 +33,7 @@ class UserMockGenerator {
         return videos
     }
 
-    private fun createVideos(): MutableSet<UserVideo> {
+    fun createVideos(): MutableSet<UserVideo> {
         val videos = mutableSetOf<UserVideo>()
         for (x in 0..10) {
             videos.add(UserVideo(generateName(10), generateName(10), LocalDateTime.now()))
@@ -40,7 +41,7 @@ class UserMockGenerator {
         return videos
     }
 
-    private fun createUserInformation(): UserInformation {
+    fun createUserInformation(): UserInformation {
         return UserInformation(generateName(8), generateName(8), generateName(8))
     }
 

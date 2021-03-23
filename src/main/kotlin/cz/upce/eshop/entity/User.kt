@@ -1,5 +1,6 @@
 package cz.upce.eshop.entity
 
+import cz.upce.eshop.dto.AddOrEditUserDto
 import cz.upce.eshop.repository.AbstractJpaPersistable
 import javax.persistence.*
 
@@ -20,5 +21,17 @@ class User(
         cascade = [CascadeType.ALL],
         fetch = FetchType.LAZY
     ) var photos: MutableSet<UserPhoto> = mutableSetOf()
-) : AbstractJpaPersistable<Long>()
+) : AbstractJpaPersistable<Long>() {
+
+    fun createUserDto(): AddOrEditUserDto {
+        return AddOrEditUserDto(
+            id,
+            username,
+            password,
+            userInformation?.firstName ?: "",
+            userInformation?.lastName ?: "",
+            userInformation?.phoneNumber ?: ""
+        )
+    }
+}
 

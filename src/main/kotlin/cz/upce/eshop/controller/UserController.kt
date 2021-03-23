@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping
 @Controller
 class UserController
 @Autowired constructor(
-    val userServiceImpl : UserServiceImpl
+    val userServiceImpl: UserServiceImpl
 ) {
 
     @ExceptionHandler(RuntimeException::class)
@@ -36,16 +36,13 @@ class UserController
 
     @GetMapping("/user-form", "/user-form/{id}")
     fun showUserForm(@PathVariable id: Long?, model: Model): String {
-        model.addAttribute(
-            "user", AddOrEditUserDto.createUserDto(userServiceImpl.getUser(id ?: -1))
-        )
+        model.addAttribute("user", userServiceImpl.getUser(id ?: -1)?.createUserDto())
         return "user-form"
     }
 
     @PostMapping("/addUser")
     fun addUserProcess(addOrEditUserDto: AddOrEditUserDto, model: Model): String {
-        userServiceImpl.addUser(addOrEditUserDto)
+        userServiceImpl.addUser(addOrEditUserDto.transformToUser())
         return "redirect:/"
     }
-
 }
