@@ -16,11 +16,12 @@ import org.springframework.test.context.junit4.SpringRunner
 @RunWith(SpringRunner::class)
 @DataJpaTest
 @ComponentScan
+@ExperimentalStdlibApi
 class UserRepositoryTest
 @Autowired constructor(
-    val userRepository: UserRepository<Long>,
-    val testEntityManager: TestEntityManager,
-    val userMockGenerator: UserMockGenerator
+    private val creator: Creator,
+    private val userRepository: UserRepository<Long>,
+    private val userMockGenerator: UserMockGenerator
 ) {
 
     @Test
@@ -31,7 +32,7 @@ class UserRepositoryTest
     @Test
     fun `should store new user`() {
         val newUser = userMockGenerator.createUser()
-        val foundUser = userRepository.save(newUser)
+        val foundUser = creator.save(newUser)
 
         assertThat(foundUser).isEqualTo(newUser)
     }
@@ -43,8 +44,9 @@ class UserRepositoryTest
         for (i in 0..10) {
             val user = userMockGenerator.createUser()
             fakeUsers.add(user)
-            userRepository.save(user)
+            creator.save(user)
         }
+
         assertThat(userRepository.findAll())
             .hasSize(fakeUsers.size)
             .containsAll(fakeUsers)
@@ -55,8 +57,8 @@ class UserRepositoryTest
         val firstUser = userMockGenerator.createUser(UserType.REGULAR)
         val secondUser = userMockGenerator.createUser(UserType.REGULAR)
 
-        testEntityManager.persist(firstUser)
-        testEntityManager.persist(secondUser)
+        creator.save(firstUser)
+        creator.save(secondUser)
 
         val foundUser = userRepository.findByIdOrNull(secondUser.id)
 
@@ -69,9 +71,9 @@ class UserRepositoryTest
         val regularUser = userMockGenerator.createUser(UserType.REGULAR)
         val adminUser = userMockGenerator.createUser(UserType.ADMIN)
 
-        testEntityManager.persist(vipUser)
-        testEntityManager.persist(regularUser)
-        testEntityManager.persist(adminUser)
+        creator.save(vipUser)
+        creator.save(regularUser)
+        creator.save(adminUser)
 
         val foundUser = userRepository.findByUserType(UserType.VIP).firstOrNull()
 
@@ -84,13 +86,13 @@ class UserRepositoryTest
         val regularUser = userMockGenerator.createUser(UserType.REGULAR)
         val adminUser = userMockGenerator.createUser(UserType.ADMIN)
 
-        testEntityManager.persist(vipUser)
-        testEntityManager.persist(regularUser)
-        testEntityManager.persist(adminUser)
+        creator.save(vipUser)
+        creator.save(regularUser)
+        creator.save(adminUser)
 
         val updatedUser = userRepository.findByUsername(vipUser.username)
         updatedUser?.userType = UserType.ADMIN
-        userRepository.save(updatedUser ?: throw IllegalStateException("User not found"))
+        creator.save(updatedUser ?: throw IllegalStateException("User not found"))
 
         val checkUser = userRepository.findByUsername(vipUser.username)
 
@@ -103,9 +105,9 @@ class UserRepositoryTest
         val regularUser = userMockGenerator.createUser(UserType.REGULAR)
         val adminUser = userMockGenerator.createUser(UserType.ADMIN)
 
-        testEntityManager.persist(vipUser)
-        testEntityManager.persist(regularUser)
-        testEntityManager.persist(adminUser)
+        creator.save(vipUser)
+        creator.save(regularUser)
+        creator.save(adminUser)
 
         userRepository.deleteAll()
 

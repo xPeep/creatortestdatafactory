@@ -1,14 +1,8 @@
 package cz.upce.eshop.service
 
-import cz.upce.eshop.dto.AddOrEditPhotoDto
-import cz.upce.eshop.dto.AddOrEditUserDto
-import cz.upce.eshop.dto.AddOrEditVideoDto
 import cz.upce.eshop.entity.*
-import cz.upce.eshop.repository.PhotoRepository
 import cz.upce.eshop.repository.UserRepository
-import cz.upce.eshop.repository.VideoRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
